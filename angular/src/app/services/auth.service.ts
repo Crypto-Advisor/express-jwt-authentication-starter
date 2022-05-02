@@ -6,13 +6,31 @@ export class AuthService {
 
     constructor() {}
           
-    setLocalStorage(responseObj) {}          
+    setLocalStorage(responseObj) {
+        const expires = moment().add(responseObj.expiresIn);
 
-    logout() {}
+        localStorage.setItem('token', responseObj.token);
+        localStorage.setItem('expires', JSON.stringify(expires.valueOf()));
 
-    isLoggedIn() {}
 
-    isLoggedOut() {}
+    }          
 
-    getExpiration() {}    
+    logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('expires');
+    }
+
+    isLoggedIn() {
+        return moment().isBefore(this.getExpiration());
+    }
+
+    isLoggedOut() {
+        return !this.isLoggedIn();
+    }
+
+    getExpiration() {
+        const expiration = localStorage.getItem('expires');
+        const expires = JSON.parse(expiration);
+        return moment(expires);
+    }    
 }
